@@ -7,21 +7,31 @@ configure_logging()
 
 settings = get_settings()
 
-app = FastAPI(
-    title=settings.app_name,
-    version=settings.app_version,
-)
+def create_app() -> FastAPI:
+    app = FastAPI(
+        title=settings.app_name,
+        version=settings.app_version,
+    )
+
+    @app.get("/")
+    async def root():
+        return {
+            "message": "Welcome to ShopFlow API"
+        }
+
+    @app.get("/health")
+    async def health():
+        return {
+            "status": "healthy"
+        }
+
+    @app.get("/ready")
+    async def ready():
+        return {
+            "status": "ready"
+        }
+
+    return app
 
 
-@app.get("/health")
-async def health():
-    return {
-        "status": "healthy"
-    }
-
-
-@app.get("/")
-async def root():
-    return {
-        "message": "Welcome to ShopFlow"
-    }
+app = create_app()
