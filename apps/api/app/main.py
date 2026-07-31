@@ -2,16 +2,24 @@ from fastapi import FastAPI
 
 from app.core.config import get_settings
 from app.core.logging import configure_logging
+from app.core.middleware import RequestMiddleware
+from app.users.router import router as user_router
 
 configure_logging()
 
 settings = get_settings()
 
+
 def create_app() -> FastAPI:
+
     app = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
     )
+
+    app.add_middleware(RequestMiddleware)
+
+    app.include_router(user_router)
 
     @app.get("/")
     async def root():
