@@ -9,12 +9,15 @@ class UserRepository:
     def create(
         self,
         db: Session,
-        user: UserCreate,
+        full_name: str,
+        email: str,
+        hashed_password: str,
     ) -> User:
 
         db_user = User(
-            full_name=user.full_name,
-            email=user.email,
+            full_name=full_name,
+            email=email,
+            hashed_password=hashed_password,
         )
 
         db.add(db_user)
@@ -27,7 +30,7 @@ class UserRepository:
         self,
         db: Session,
         email: str,
-    ):
+    ) -> User | None:
 
         return (
             db.query(User)
@@ -38,11 +41,22 @@ class UserRepository:
     def get_by_id(
         self,
         db: Session,
-        user_id: str,
-    ):
+        user_id: int,
+    ) -> User | None:
 
         return (
             db.query(User)
             .filter(User.id == user_id)
             .first()
+        )
+
+    def list(
+        self,
+        db: Session,
+    ) -> list[User]:
+
+        return (
+            db.query(User)
+            .order_by(User.id)
+            .all()
         )

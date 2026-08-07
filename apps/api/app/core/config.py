@@ -7,6 +7,11 @@ class Settings(BaseSettings):
     app_name: str = "ShopFlow API"
     app_version: str = "0.1.0"
     database_url: str
+
+    secret_key: str
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 30
+    
     debug: bool = True
 
     model_config = SettingsConfigDict(
