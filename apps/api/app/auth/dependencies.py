@@ -1,55 +1,39 @@
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from jose import JWTError, jwt
-from sqlalchemy.orm import Session
+from fastapi.security import OAuth2PasswordBearer
 
-from app.core.security import SECRET_KEY, ALGORITHM
-from app.db.dependencies import get_db
-from app.users.repository import UserRepository
+from app.core.security import decode_access_token
 
 
-security = HTTPBearer()
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/auth/login"
+)
 
-user_repository = UserRepository()
 
-
-def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db),
-):
-
-    token = credentials.credentials
+def get_current_user_id(
+    token: str = Depends(oauth2_scheme),
+) -> str:
 
     try:
-        payload = jwt.decode(
-            token,
-            SECRET_KEY,
-            algorithms=[ALGORITHM],
-        )
+        payload = decode_access_token(token)
 
-        user_id = payload.get("sub")
-
-        if user_id is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authentication token",
-            )
-
-    except JWTError:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication token",
+            detail="Invalid or expired token",
+            headers={
+                "WWW-Authenticate": "Bearer",
+            },
         )
 
-    user = user_repository.get_by_id(
-        db,
-        user_id,
-    )
+    user_id = payload.get("sub")
 
-    if user is None:
+    if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
+            detail="Invalid token",
+            headers={
+                "WWW-Authenticate": "Bearer",
+            },
         )
 
-    return user
+    return user_id

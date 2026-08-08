@@ -11,7 +11,7 @@ from app.users.repository import UserRepository
 class AuthService:
 
     def __init__(self):
-        self.user_repository = UserRepository()
+        self.repository = UserRepository()
 
     def login(
         self,
@@ -20,7 +20,7 @@ class AuthService:
         password: str,
     ):
 
-        user = self.user_repository.get_by_email(
+        user = self.repository.get_by_email(
             db,
             email,
         )
@@ -40,13 +40,12 @@ class AuthService:
                 detail="Invalid email or password",
             )
 
-        access_token = create_access_token(
-            {
-                "sub": user.id,
-            }
+        token = create_access_token(
+            user_id=user.id,
+            role=user.role.value,
         )
 
         return {
-            "access_token": access_token,
+            "access_token": token,
             "token_type": "bearer",
         }

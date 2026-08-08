@@ -41,7 +41,7 @@ class UserRepository:
     def get_by_id(
         self,
         db: Session,
-        user_id: int,
+        user_id: str,
     ) -> User | None:
 
         return (

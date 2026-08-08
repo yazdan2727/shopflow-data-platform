@@ -23,11 +23,11 @@ service = AuthService()
     response_model=TokenResponse,
 )
 def login(
-    credentials: LoginRequest,
+    request: LoginRequest,
     db: Session = Depends(get_db),
 ):
     return service.login(
         db=db,
-        email=credentials.email,
-        password=credentials.password,
+        email=request.email,
+        password=request.password,
     )
