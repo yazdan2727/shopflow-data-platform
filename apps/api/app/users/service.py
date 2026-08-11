@@ -23,7 +23,10 @@ class UserService:
         )
 
         if existing:
-            raise ValueError("Email already exists")
+            raise HTTPException(
+                status_code=409,
+                detail="Email already exists",
+            )
 
         hashed_password = hash_password(
             user.password

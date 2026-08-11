@@ -30,10 +30,13 @@ class User(Base):
     hashed_password: Mapped[str]
 
     role: Mapped[UserRole] = mapped_column(
-        SQLEnum(UserRole),
-        default=UserRole.CUSTOMER,
+        SQLEnum(
+          UserRole,
+          values_callable=lambda enum: [e.value for e in enum],
+        ),
         nullable=False,
-    )
+        default=UserRole.CUSTOMER,
+        )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
