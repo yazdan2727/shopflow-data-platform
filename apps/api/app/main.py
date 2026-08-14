@@ -5,6 +5,7 @@ from app.core.logging import configure_logging
 from app.core.middleware import RequestMiddleware
 from app.users.router import router as user_router
 from app.auth.router import router as auth_router
+from app.products.router import router as product_router
 
 configure_logging()
 
@@ -22,6 +23,7 @@ def create_app() -> FastAPI:
 
     app.include_router(user_router)
     app.include_router(auth_router)
+    app.include_router(product_router)
 
     @app.get("/")
     async def root():
