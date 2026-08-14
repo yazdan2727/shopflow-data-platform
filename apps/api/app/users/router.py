@@ -5,6 +5,7 @@ from app.db.dependencies import get_db
 from app.users.schemas import UserCreate, UserResponse
 from app.users.service import UserService
 from app.auth.dependencies import get_current_user_id
+from app.auth.dependencies import require_admin
 
 router = APIRouter(
     prefix="/users",
@@ -28,6 +29,27 @@ def create_user(
         db,
         user,
     )
+
+@router.get("/admin")
+def admin_endpoint(
+    current_user: User = Depends(require_admin),
+):
+    return {
+        "message": "Welcome admin",
+        "user_id": current_user.id,
+    }
+
+@router.get(
+    "/admin-test",
+)
+def admin_test(
+    current_user: User = Depends(require_admin),
+):
+    return {
+        "message": "You are an admin",
+        "user_id": current_user.id,
+        "role": current_user.role,
+    }
 
 @router.get(
     "",

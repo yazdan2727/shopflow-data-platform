@@ -7,6 +7,7 @@ from app.auth.schemas import (
 )
 from app.auth.service import AuthService
 from app.db.dependencies import get_db
+from app.auth.dependencies import require_admin
 from fastapi.security import OAuth2PasswordRequestForm
 
 
